@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+    <mvc:annotation-driven/>
+
+    <mvc:resources mapping="/static/**" location="/static/"/>
+    <mvc:default-servlet-handler/>
+
+    <context:component-scan base-package="com.ecommerce.restful.ws.controller"/>
+    <context:component-scan base-package="com.ecommerce.restful.ws"/>
+    <context:component-scan base-package="com.ecommerce.restful.ws.service"/>
+    
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="mappingResources">
+            <list>
+                <value>hibernate.hbm.xml</value>
+            </list>
+        </property>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="annotatedClasses">
+			<list>
+				<value>com.ecommerce.restful.ws.model.Product</value>
+				<value>com.ecommerce.restful.ws.model.Customer</value>
+				<value>com.ecommerce.restful.ws.model.CustomerOrder</value>
+			</list>
+		</property>
+        <property name="hibernateProperties">
+            <props>
+            	<prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+                <prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
+                <prop key="hibernate.connection.isolation">2</prop>
+                <prop key="hibernate.connection.autocommit">false</prop>
+                <prop key="hibernate.generate_statistics">true</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <prop key="hibernate.use_sql_comments">true</prop>
+                <prop key="hibernate.jdbc.fetch_size">100</prop>
+                <prop key="hibernate.jdbc.batch_size">30</prop>
+                <prop key="hibernate.order_inserts">true</prop>
+                <prop key="hibernate.order_updates">true</prop>
+                <prop key="hibernate.max_fetch_depth">3</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="persistenceExceptionTranslationPostProcessor"
+    	class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+	
+	<bean id="productDao" class="com.ecommerce.restful.ws.dao.ProductDaoImpl"></bean>
+	<bean id="customerOrderDao" class="com.ecommerce.restful.ws.dao.CustomerOrderDaoImpl"></bean>
+	<bean id="customerDao" class="com.ecommerce.restful.ws.dao.CustomerDaoImpl"></bean>
+	
+	<bean id="productService" name="productService" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.ecommerce.restful.ws.service.ProductService"/>
+    </bean>
+    
+    <bean id="customerOrderService" name="customerOrderService" class="org.mockito.Mockito" factory-method="mock">
+        <constructor-arg value="com.ecommerce.restful.ws.service.CustomerOrderService"/>
+    </bean>   
+	
+</beans>
